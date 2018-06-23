@@ -10,7 +10,7 @@ exports.index = async function(ctx, next){
 	const comments = await query(
 			'select comment.*,post.id as postId,post.title as postTitle,user.username as username from comment left join post on comment.postId = post.id left join user on comment.userId = user.id order by comment.id desc limit 10'
 		);
-	ctx.render('index', {posts, comments, from:ctx.query.from || ''});
+	ctx.render('index', {posts, comments, from:ctx.query.from || '', avatarid:ctx.query.avatarid || ''});
 	connection.end();
 };
 
