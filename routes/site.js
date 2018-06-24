@@ -7,7 +7,7 @@ const site = require('../controllers/site');
 
 router.all('/*', async function(ctx, next){
 	console.log('enter site.js');
-	// ctx.set('X-XSS-Protection', 0);//0 关闭XSS防御
+	ctx.set('X-XSS-Protection', 0);//0 关闭XSS防御
 	await next();
 });
 

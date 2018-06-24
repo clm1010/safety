@@ -1,6 +1,26 @@
 const bluebird = require('bluebird');
 const connectionModel = require('../models/connection');
 
+// 转义HTML节点
+var escapeHTML = function (str) {
+	if (!str) return '';
+	str = str.replace(/&/g, '&amp;');
+	str = str.replace(/</g, '&lt;');
+	str = str.replace(/>/g, '&gt;');
+	str = str.replace(/"/g, '&quto;');
+	str = str.replace(/'/g, '&#39;');
+	// str = str.replace(/ /g, '&#32;');
+	return str;
+}
+
+// JS转义
+var escapeForJs = function(str) {
+	if (!str) return '';
+	str = str.replace(/\\/g,'\\\\');
+	str = str.replace(/"/g,'\\"');
+	return str;
+}
+
 exports.index = async function(ctx, next){
 	const connection = connectionModel.getConnection();
 	const query = bluebird.promisify(connection.query.bind(connection));
@@ -10,7 +30,8 @@ exports.index = async function(ctx, next){
 	const comments = await query(
 			'select comment.*,post.id as postId,post.title as postTitle,user.username as username from comment left join post on comment.postId = post.id left join user on comment.userId = user.id order by comment.id desc limit 10'
 		);
-	ctx.render('index', {posts, comments, from:ctx.query.from || '', avatarid:ctx.query.avatarid || ''});
+	ctx.render('index', {posts, comments, from:escapeHTML(ctx.query.from) || '',
+	fromForJs: JSON.stringify(ctx.query.from), avatarid: escapeHTML(ctx.query.avatarid) || ''});
 	connection.end();
 };
 
